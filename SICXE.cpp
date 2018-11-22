@@ -3,9 +3,7 @@
 #include <vector>
 #include <string>
 #include "pass1.h"
-#include "pass2.h"
 #include "optable.h"
-#include "hte.h"
 
 using namespace std;
 
@@ -16,7 +14,7 @@ int main(){
 
     vector<vector<string>> code(1000);
     vector<int> location;
-    map<string,int> symbolTable;
+    map<string,string> symbolTable;
     map<string,string>opTable;
     vector<string>objectCode;
     vector<string>hteRecord;
@@ -28,7 +26,7 @@ int main(){
     createSymbolTable(code,location,symbolTable,lines-1);
     printSymbolTable(symbolTable);
 
-    initOpTable(opTable);
+    //initOpTable(opTable);
 
     /*generateOpcode(code,objectCode,opTable,lines-1);
     generateAddresses(code,objectCode,symbolTable,lines-1);

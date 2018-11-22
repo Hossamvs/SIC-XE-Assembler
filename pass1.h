@@ -61,6 +61,13 @@
         return output;
     }
 
+    std::string intToHexString(int input){
+
+        std::stringstream ss;
+        ss<<std::hex<<input;
+        return ss.str();
+    }
+
     int getStartAddress(std::vector<std::vector<std::string>> code){
 
         return hexToDec(code[0][2]);
@@ -112,9 +119,9 @@
                 }else if(code[i].size()==3){
                     if(code[i][1][0]=='+'){
                         address+=4;
-                    }else if(code[i][1]=="FIX" || code[i][0]=="FLOAT" || code[i][0]=="HIO" || code[i][0]=="NORM" || code[i][0]=="SIO" || code[i][0]=="TIO" || code[i][0]=="FIX" ){
+                    }else if(code[i][1]=="FIX" || code[i][1]=="FLOAT" || code[i][1]=="HIO" || code[i][1]=="NORM" || code[i][1]=="SIO" || code[i][1]=="TIO" || code[i][1]=="FIX" ){
                         address+=1;
-                    }else if(code[i][1]=="ADDR" || code[i][0]=="CLEAR" || code[i][0]=="COMPR" || code[i][0]=="DIVR" || code[i][0]=="MULR" || code[i][0]=="RMO" || code[i][0]=="SHIFTL" || code[i][0]=="SHIFTR" || code[i][0]=="SUBR" || code[i][0]=="SVC" || code[i][0]=="TIXR"){
+                    }else if(code[i][1]=="ADDR" || code[i][1]=="CLEAR" || code[i][1]=="COMPR" || code[i][1]=="DIVR" || code[i][1]=="MULR" || code[i][1]=="RMO" || code[i][1]=="SHIFTL" || code[i][1]=="SHIFTR" || code[i][1]=="SUBR" || code[i][1]=="SVC" || code[i][1]=="TIXR"){
                         address+=2;
                     }else
                         address+=3;
@@ -127,15 +134,24 @@
         }
         return;
 }
-    void createSymbolTable(std::vector<std::vector<std::string>> code, std::vector<int> location, std::map<std::string,int> &symbolTable,int lines){
+    void createSymbolTable(std::vector<std::vector<std::string>> code, std::vector<int> location, std::map<std::string,std::string> &symbolTable,int lines){
 
-        int j=0;
+        int j=0,prevj=0;
 
         for(int i=1; i<lines ; i++){
 
-            if(code[i].size() == 3 && code[i][2] != "X" && code[i][2] != "x"){
+            if(code[i].size() == 3 && code[i][1][(code[i][1].size()-1)] != ',' && code[i][2] != "X" && code[i][2] != "x"){
 
-                symbolTable.insert(std::pair<std::string,int>(code[i][0], location[j]));
+                if(code[i][1] == "EQU"){
+
+                    if(code[i][2]=="*")
+                        symbolTable.insert(std::pair<std::string,std::string>(code[i][0], intToHexString(location[prevj])));
+                    else
+                        symbolTable.insert(std::pair<std::string,std::string>(code[i][0], code[i][2]));
+                }else{
+
+                    symbolTable.insert(std::pair<std::string,std::string>(code[i][0],intToHexString(location[j])));
+                }
 
                 if(code[i][2][0]=='X' || code[i][2][0]=='x'){
 
@@ -149,21 +165,22 @@
 
                 //symbolTable.insert(std::pair<std::string,int>(code[i][0], location[j]));
             }
-
+            prevj=j;
             j++;
         }
     }
 
-    void printSymbolTable(std::map<std::string,int> symbolTable){
+    void printSymbolTable(std::map<std::string,std::string> symbolTable){
 
         std::ofstream file;
 
         file.open("symboltable.txt");
 
-        for( std::map<std::string,int>::const_iterator it = symbolTable.begin(); it != symbolTable.end(); ++it )
+        for( std::map<std::string,std::string>::const_iterator it = symbolTable.begin(); it != symbolTable.end(); ++it )
         {
           std::string key = it->first;
-          int value = it->second;
+          //int value = it->second;
+          std::string value = it->second;
           file<<key<<"\t"<<std::hex<< std::setfill('0') << std::setw(4) << value<<std::endl;
 
         }
