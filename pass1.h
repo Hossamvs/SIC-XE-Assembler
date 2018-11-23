@@ -74,65 +74,95 @@
     }
 
 
-    void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int> &location, int lines){
+void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int> &location, int lines){
+
         location.push_back(getStartAddress(code));
         int address=getStartAddress(code);
 
         for(int i=1 ; i<lines ; i++){
-            if(code[i][1] == "RESW"){
-                address+=stringToDec(code[i][2]) * 3;
-            }else if(code[i][1] == "RESB"){
-                address+=stringToDec(code[i][2]);
-            }else if(code[i][1] == "WORD"){
-                address+=3;
-            }else if(code[i][1] == "BYTE"){
-                if(code[i][2][0]=='X' || code[i][2][0]=='x'){
-                    //address += ceil( (double)(code[i][2].substr(2,code[i][2].size()-3).size() ) / 2.0 );
 
-                    for(int j=0;j<(int)ceil( (double)(code[i][2].substr(2,code[i][2].size()-3).size() ) / 2.0 );j++){
-                        address+=1;
-                        location.push_back(address);
-                    }
-
+            if(code[i].size()==1){
+                if(code[i][0] == "LTORG"){
                     continue;
-                }
-                else if(code[i][2][0]=='C' || code[i][2][0]=='c'){
-                    //address += ceil( (double)(code[i][2].substr(2,code[i][2].size()-3).size() ) / 3.0 );
+                }else if(code[i][0][0]== '+'){
+                    address+=4;
+                }else
+                    address+=3;
 
-                    for(int j=0;j<code[i][2].substr(2,code[i][2].size()-3).size();j++){
-                        address+=1;
-                        location.push_back(address);
-                    }
+                // HANDLE INSTRUCTIONS THAT HAVE ONLY ONE OPERAND
 
-                    continue;
-                }
-            }else{
-                if(code[i].size()==2){
+            }else if(code[i].size()==2){
+
                     if(code[i][0][0]=='+'){
                         address+=4;
+
                     }else if(code[i][0]=="FIX" || code[i][0]=="FLOAT" || code[i][0]=="HIO" || code[i][0]=="NORM" || code[i][0]=="SIO" || code[i][0]=="TIO" || code[i][0]=="FIX" ){
                         address+=1;
+
                     }else if(code[i][0]=="ADDR" || code[i][0]=="CLEAR" || code[i][0]=="COMPR" || code[i][0]=="DIVR" || code[i][0]=="MULR" || code[i][0]=="RMO" || code[i][0]=="SHIFTL" || code[i][0]=="SHIFTR" || code[i][0]=="SUBR" || code[i][0]=="SVC" || code[i][0]=="TIXR"){
                         address+=2;
-                    }else
+
+                    }else if(code[i][0]=="BASE"){
+                        continue;
+
+                    }else{
                         address+=3;
-                }else if(code[i].size()==3){
-                    if(code[i][1][0]=='+'){
+
+                    }
+
+            }else if (code[i].size()==3){
+
+                    if(code[i][1] == "RESW"){
+                        address+=stringToDec(code[i][2]) * 3;
+                    }else if(code[i][1] == "RESB"){
+                        address+=stringToDec(code[i][2]);
+                    }else if(code[i][1] == "WORD"){
+                        address+=3;
+                    }else if(code[i][1] == "BYTE"){
+                        if(code[i][2][0]=='X' || code[i][2][0]=='x'){
+
+                            for(int j=0;j<(int)ceil( (double)(code[i][2].substr(2,code[i][2].size()-3).size() ) / 2.0 );j++){
+                                address+=1;
+                                location.push_back(address);
+                            }
+
+                            continue;   // WE CONTINUE BECAUSE WE ALREADY PUSHED TO THE VECTOR AND WE WANT TO EAVOID RUNNING THE VECTOR PUSH AT THE END OF THE BIG LOOP
+
+                        }else if(code[i][2][0]=='C' || code[i][2][0]=='c'){
+
+                            for(int j=0;j<code[i][2].substr(2,code[i][2].size()-3).size();j++){
+                                address+=1;
+                                location.push_back(address);
+                            }
+
+                            continue;
+                        }
+
+                    }else if(code[i][1][0]=='+'){
                         address+=4;
-                    }else if(code[i][1]=="FIX" || code[i][1]=="FLOAT" || code[i][1]=="HIO" || code[i][1]=="NORM" || code[i][1]=="SIO" || code[i][1]=="TIO" || code[i][1]=="FIX" ){
+
+                    }else if(code[i][1]=="FIX" || code[i][1]=="FLOAT" || code[i][1]=="HIO" || code[i][1]=="NORM" || code[i][1]=="SIO" || code[i][1]=="TIO" || code[i][1]=="FIX"){
                         address+=1;
+
                     }else if(code[i][1]=="ADDR" || code[i][1]=="CLEAR" || code[i][1]=="COMPR" || code[i][1]=="DIVR" || code[i][1]=="MULR" || code[i][1]=="RMO" || code[i][1]=="SHIFTL" || code[i][1]=="SHIFTR" || code[i][1]=="SUBR" || code[i][1]=="SVC" || code[i][1]=="TIXR"){
                         address+=2;
-                    }else
+
+                    }else if(code[i][1]=="EQU"){
+                        continue;
+
+                    }
+                    else{
                         address+=3;
-                }
 
+                    }
 
-            }
+            }// END SIZE 3
 
             location.push_back(address);
-        }
-        return;
+
+        }// END LOOP
+
+    return;
 }
     void createSymbolTable(std::vector<std::vector<std::string>> code, std::vector<int> location, std::map<std::string,std::string> &symbolTable,int lines){
 
