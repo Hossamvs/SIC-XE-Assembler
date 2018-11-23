@@ -61,6 +61,15 @@
         return output;
     }
 
+    int hexStringToDec(std::string str){
+        int output;
+        std::stringstream stream;
+        stream <<std::hex<<str;
+        stream >> output;
+
+        return output;
+    }
+
     std::string intToHexString(int input){
 
         std::stringstream ss;
@@ -175,6 +184,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                         address+=3;
 
                     }
+
 
                     if(code[i][1][0] == '='){
                         literals.push_back(code[i][1]);
@@ -322,7 +332,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                         symbolTable.insert(std::pair<std::string,std::string>(code[i][0], code[i][2]));
                 }else{
 
-                    symbolTable.insert(std::pair<std::string,std::string>(code[i][0],intToHexString(location[j])));
+                    symbolTable.insert(std::pair<std::string,std::string>(code[i][0],intToHexString(location[j+1])));
                 }
 
                 if(code[i][2][0]=='X' || code[i][2][0]=='x'){
@@ -338,6 +348,49 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                 //symbolTable.insert(std::pair<std::string,int>(code[i][0], location[j]));
             }
             j++;
+        }
+        //for expressions
+        for( std::map<std::string,std::string>::const_iterator it = symbolTable.begin(); it != symbolTable.end(); ++it ){
+                std::string key = it->first;
+                std::string temp = it->second;
+
+                //handling subtraction
+                std::size_t subFound = temp.find('-');
+                subFound=temp.find('-');
+                if(subFound!=std::string::npos){
+                    std::size_t x = temp.find('-');
+                    std::string firstOperand = temp.substr(0,subFound);
+                    std::string secondOperand = temp.substr(subFound+1);
+                    std::map<std::string,std::string>::const_iterator itr;
+
+                    int firstOperandNumber = hexStringToDec(symbolTable.find(firstOperand)->second);
+                    int secondOperandNumber = hexStringToDec(symbolTable.find(secondOperand)->second);
+
+                    symbolTable.at(key)=intToHexString(firstOperandNumber - secondOperandNumber );
+
+                    /* pour debugging */
+                    //std::cout<<secondOperandNumber<<std::endl;
+                    //std::cout<<firstOperandNumber<<std::endl;
+                }
+
+                //handling addition
+                std::size_t addFound = temp.find('+');
+                addFound=temp.find('+');
+                if(addFound!=std::string::npos){
+                    std::size_t x = temp.find('+');
+                    std::string firstOperand = temp.substr(0,addFound);
+                    std::string secondOperand = temp.substr(addFound+1);
+                    std::map<std::string,std::string>::const_iterator itr;
+
+                    int firstOperandNumber = hexStringToDec(symbolTable.find(firstOperand)->second);
+                    int secondOperandNumber = hexStringToDec(symbolTable.find(secondOperand)->second);
+
+                    symbolTable.at(key)=intToHexString(firstOperandNumber + secondOperandNumber );
+
+                    /* pour debugging */
+                    //std::cout<<secondOperandNumber<<std::endl;
+                    //std::cout<<firstOperandNumber<<std::endl;
+                }
         }
     }
 
