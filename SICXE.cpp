@@ -18,10 +18,11 @@ int main(){
     map<string,string>opTable;
     vector<string>objectCode;
     vector<string>hteRecord;
+    vector<vector<string>>literalTable(50);
 
     int lines = readFile(code);
 
-    addressCounter(code,location,lines-1);
+    addressCounter(code,location,literalTable,lines-1);
 
     createSymbolTable(code,location,symbolTable,lines-1);
     printSymbolTable(symbolTable);
@@ -37,6 +38,13 @@ int main(){
     generateHTEFile(hteRecord);
 */
     //FOR DEBUGGING
+
+      for(int i=0;i<literalTable.size();i++){
+        for(int j=0;j<literalTable[i].size();j++)
+            cout<<literalTable[i][j]<<' ';
+
+        cout<<endl;
+      }
 
 //    for(int i=0 ; i<hteRecord.size(); i++)
 //        cout<<hteRecord[i]<<endl;
