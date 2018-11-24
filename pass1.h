@@ -368,8 +368,13 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                     std::string secondOperand = temp.substr(subFound+1);
                     std::map<std::string,std::string>::const_iterator itr;
 
+                    int secondOperandNumber=0;
+
                     int firstOperandNumber = hexStringToDec(symbolTable.find(firstOperand)->second);
-                    int secondOperandNumber = hexStringToDec(symbolTable.find(secondOperand)->second);
+                    if(!hexStringToDec(symbolTable.find(secondOperand)->second))//CHECK FOR IMMEDIATE VALUES
+                        secondOperandNumber = hexStringToDec(secondOperand);
+                    else
+                        secondOperandNumber = hexStringToDec(symbolTable.find(secondOperand)->second);
 
                     symbolTable.at(key)=intToHexString(firstOperandNumber - secondOperandNumber );
 
@@ -387,12 +392,19 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                     std::string secondOperand = temp.substr(addFound+1);
                     std::map<std::string,std::string>::const_iterator itr;
 
+                    int secondOperandNumber=0;
+
                     int firstOperandNumber = hexStringToDec(symbolTable.find(firstOperand)->second);
-                    int secondOperandNumber = hexStringToDec(symbolTable.find(secondOperand)->second);
+
+                    if(!hexStringToDec(symbolTable.find(secondOperand)->second)) //CHECK FOR IMMEDIATE VALUES
+                         secondOperandNumber = hexStringToDec(secondOperand);
+                    else
+                         secondOperandNumber = hexStringToDec(symbolTable.find(secondOperand)->second);
 
                     symbolTable.at(key)=intToHexString(firstOperandNumber + secondOperandNumber );
 
                     /* pour debugging */
+                    //std::cout<<secondOperand<<std::endl;
                     //std::cout<<secondOperandNumber<<std::endl;
                     //std::cout<<firstOperandNumber<<std::endl;
                 }
