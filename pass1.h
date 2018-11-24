@@ -8,6 +8,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <algorithm>
 
     int readFile(std::vector<std::vector<std::string>> &code){
 
@@ -186,7 +187,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                     }
 
 
-                    if(code[i][1][0] == '='){
+                    if(code[i][1][0] == '=' && std::find(literals.begin(),literals.end(),code[i][1]) == literals.end()){
                         literals.push_back(code[i][1]);
 
                     }
@@ -236,7 +237,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
 
                     }
 
-                if(code[i][2][0] == '='){
+                if(code[i][2][0] == '=' && std::find(literals.begin(),literals.end(),code[i][2]) == literals.end()){
                     literals.push_back(code[i][2]);
 
                 }
@@ -408,6 +409,27 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
           file<<key<<"\t"<<std::hex<< std::setfill('0') << std::setw(4) << value<<std::endl;
 
         }
+
+        file.close();
+
+        return;
+    }
+
+    void printLiteralTable(std::vector<std::vector<std::string>> literalTable){
+
+        std::ofstream file;
+
+        file.open("literaltable.txt");
+
+        for(int i=0;i<literalTable.size();i++){
+            for(int j=0;j<literalTable[i].size();j++){
+
+                file<<literalTable[i][j]<<' ';
+            }
+
+            file<<std::endl;
+        }
+
 
         file.close();
 

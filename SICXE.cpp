@@ -18,7 +18,7 @@ int main(){
     map<string,string>opTable;
     vector<string>objectCode;
     vector<string>hteRecord;
-    vector<vector<string>>literalTable(50);
+    vector<vector<string>>literalTable(500);
 
     int lines = readFile(code);
 
@@ -26,6 +26,7 @@ int main(){
 
     createSymbolTable(code,location,symbolTable,lines-1);
     printSymbolTable(symbolTable);
+    printLiteralTable(literalTable);
 
     //initOpTable(opTable);
 
@@ -39,12 +40,12 @@ int main(){
 */
     //FOR DEBUGGING
 
-      for(int i=0;i<literalTable.size();i++){
-        for(int j=0;j<literalTable[i].size();j++)
-            cout<<literalTable[i][j]<<' ';
-
-        cout<<endl;
-      }
+//      for(int i=0;i<literalTable.size();i++){
+//        for(int j=0;j<literalTable[i].size();j++)
+//            cout<<literalTable[i][j]<<' ';
+//
+//        cout<<endl;
+//      }
 
 //    for(int i=0 ; i<hteRecord.size(); i++)
 //        cout<<hteRecord[i]<<endl;
