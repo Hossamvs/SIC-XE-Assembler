@@ -115,7 +115,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL SIZE
                                  stream.str(std::string());
 
-                                 stream<<std::hex<<location[location.size()-1];
+                                 stream<<std::hex<<address;
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL ADDRESS
                                  stream.str(std::string());
 
@@ -123,7 +123,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
 
                                  for(int k=0;k<(int)ceil( (double)(literals[j].substr(3,literals[j].size()-4).size() ) / 2.0 );k++){
                                     address+=1;
-                                    location.push_back(address);
+                                    //location.push_back(address);
                                 }
 
                          }else if(literals[j][1] == 'C' || literals[j][1] == 'c'){
@@ -141,7 +141,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL SIZE
                                  stream.str(std::string());
 
-                                 stream<<std::hex<<location[location.size()-1];
+                                 stream<<std::hex<<address;
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL ADDRESS
                                  stream.str(std::string());
 
@@ -149,7 +149,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
 
                                 for(int k=0;k<literals[j].substr(3,literals[j].size()-4).size();k++){
                                     address+=1;
-                                    location.push_back(address);
+                                    //location.push_back(address);
                                 }
 
                          }
@@ -157,6 +157,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                     } // END EMPTYING LOOP
 
                     literals.clear();
+                    location.push_back(address);
 
                     continue;
 
@@ -179,6 +180,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                         address+=2;
 
                     }else if(code[i][0]=="BASE"){
+                        location.push_back(address);
                         continue;
 
                     }else{
@@ -230,6 +232,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                         address+=2;
 
                     }else if(code[i][1]=="EQU"){
+                        location.push_back(address);
                         continue;
 
                     }else{
@@ -270,7 +273,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL SIZE
                                  stream.str(std::string());
 
-                                 stream<<std::hex<<location[location.size()-1];
+                                 stream<<std::hex<<address;
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL ADDRESS
                                  stream.str(std::string());
 
@@ -278,7 +281,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
 
                                  for(int k=0;k<(int)ceil( (double)(literals[j].substr(3,literals[j].size()-4).size() ) / 2.0 );k++){
                                     address+=1;
-                                    location.push_back(address);
+                                    //location.push_back(address);
                                 }
 
                          }else if(literals[j][1] == 'C' || literals[j][1] == 'c'){
@@ -296,7 +299,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL SIZE
                                  stream.str(std::string());
 
-                                 stream<<std::hex<<location[location.size()-1];
+                                 stream<<std::hex<<address;
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL ADDRESS
                                  stream.str(std::string());
 
@@ -304,7 +307,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
 
                                 for(int k=0;k<literals[j].substr(3,literals[j].size()-4).size();k++){
                                     address+=1;
-                                    location.push_back(address);
+                                    //location.push_back(address);
                                 }
 
                          }
@@ -323,25 +326,25 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
 
         for(int i=1; i<lines ; i++){
 
-            if(code[i].size() == 3 && code[i][1][(code[i][1].size()-1)] != ',' && code[i][2] != "X" && code[i][2] != "x"){
+            if(code[i].size() == 3){
 
                 if(code[i][1] == "EQU"){
 
                     if(code[i][2]=="*")
-                        symbolTable.insert(std::pair<std::string,std::string>(code[i][0], intToHexString(location[j--])));
+                        symbolTable.insert(std::pair<std::string,std::string>(code[i][0], intToHexString(location[j])));
                     else
                         symbolTable.insert(std::pair<std::string,std::string>(code[i][0], code[i][2]));
                 }else{
 
-                    symbolTable.insert(std::pair<std::string,std::string>(code[i][0],intToHexString(location[j+1])));
+                    symbolTable.insert(std::pair<std::string,std::string>(code[i][0],intToHexString(location[j])));
                 }
 
-                if(code[i][2][0]=='X' || code[i][2][0]=='x'){
+                if((code[i][2][0]=='X' || code[i][2][0]=='x')&&(code[i][2]!="X")){
 
 
-                    j+=(int)ceil( (double)(code[i][2].substr(2,code[i][2].size()-3).size() ) / 2.0) -1;
+                    j+=(int)ceil( (double)(code[i][2].substr(2,code[i][2].size()-3).size() ) / 2.0)-1;
 
-                }else if(code[i][2][0]=='C' || code[i][2][0]=='c'){
+                }else if((code[i][2][0]=='C' || code[i][2][0]=='c')&&(code[i][2]!="C")){
 
                     j+=code[i][2].substr(2,code[i][2].size()-3).size() -1;
                 }
@@ -350,6 +353,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
             }
             j++;
         }
+
         //for expressions
         for( std::map<std::string,std::string>::const_iterator it = symbolTable.begin(); it != symbolTable.end(); ++it ){
                 std::string key = it->first;
