@@ -2,7 +2,9 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <sstream>
 #include "pass1.h"
+#include "pass2.h"
 #include "optable.h"
 
 using namespace std;
@@ -16,6 +18,7 @@ int main(){
     vector<int> location;
     map<string,string> symbolTable;
     map<string,string>opTable;
+    vector<int>objectCodeInt;
     vector<string>objectCode;
     vector<string>hteRecord;
     vector<vector<string>>literalTable(500);
@@ -28,16 +31,16 @@ int main(){
     printSymbolTable(symbolTable);
     printLiteralTable(literalTable);
 
-    //initOpTable(opTable);
+    initOpTable(opTable);
 
-    /*generateOpcode(code,objectCode,opTable,lines-1);
-    generateAddresses(code,objectCode,symbolTable,lines-1);
+    generateOpcode(code,objectCodeInt,opTable,lines-1);
+    //generateAddresses(code,objectCode,symbolTable,lines-1);
 
-    createHead(code,location,hteRecord);
-    createText(code,location,hteRecord,objectCode,lines-1);
-    createEnd(location,hteRecord);
-    generateHTEFile(hteRecord);
-*/
+    //createHead(code,location,hteRecord);
+    //createText(code,location,hteRecord,objectCode,lines-1);
+    //createEnd(location,hteRecord);
+    //generateHTEFile(hteRecord);
+
     //FOR DEBUGGING
 
 //      for(int i=0;i<literalTable.size();i++){
@@ -50,8 +53,8 @@ int main(){
 //    for(int i=0 ; i<hteRecord.size(); i++)
 //        cout<<hteRecord[i]<<endl;
 
-    for(int i=0 ; i<location.size(); i++)
-        cout<<hex<<location[i]<<endl;
+//    for(int i=0 ; i<location.size(); i++)
+//        cout<<hex<<location[i]<<endl;
 
 
 
@@ -66,6 +69,13 @@ int main(){
 //    for(int i=0;i<objectCode.size();i++)
 //        cout<<objectCode[i]<<endl;
 
+    for(int i=0;i<objectCodeInt.size();i++){
+        std::stringstream ss;
+        ss<<std::hex<<objectCodeInt[i];
+        cout<<ss.str()<<" | "<<location[i]<<endl;
+        ss.str(std::string());
+//cout<<objectCodeInt[i]<<endl;
+    }
 //        for(int c=0;c<code.size();c++)
 //            for(int j=0;j<code[c].size();j++)
 //                cout<<code[c][j]<<endl;

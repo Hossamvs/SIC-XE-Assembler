@@ -10,6 +10,8 @@
 #include <cmath>
 #include <algorithm>
 
+#include "utilities.h"
+
     int readFile(std::vector<std::vector<std::string>> &code){
 
         std::ifstream inFile("in.txt");
@@ -37,45 +39,6 @@
         }
 
         return i;
-    }
-
-
-    int hexToDec(std::string str){
-
-        int address;
-
-        std::stringstream stream;
-        stream << str;
-        stream >> std::hex >> address;
-
-        return address;
-    }
-
-    int stringToDec(std::string str){
-
-        int output;
-
-        std::stringstream stream;
-        stream << str;
-        stream >> output;
-
-        return output;
-    }
-
-    int hexStringToDec(std::string str){
-        int output;
-        std::stringstream stream;
-        stream <<std::hex<<str;
-        stream >> output;
-
-        return output;
-    }
-
-    std::string intToHexString(int input){
-
-        std::stringstream ss;
-        ss<<std::hex<<input;
-        return ss.str();
     }
 
     int getStartAddress(std::vector<std::vector<std::string>> code){
