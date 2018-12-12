@@ -34,7 +34,7 @@ int main(){
     initOpTable(opTable);
 
     generateOpcode(code,objectCodeInt,opTable,lines-1);
-    //generateAddresses(code,objectCode,symbolTable,lines-1);
+    generateAddresses(code,objectCode,objectCodeInt,symbolTable,literalTable,location,lines-1);
 
     //createHead(code,location,hteRecord);
     //createText(code,location,hteRecord,objectCode,lines-1);
@@ -66,16 +66,16 @@ int main(){
 //
 //    }
 
-//    for(int i=0;i<objectCode.size();i++)
-//        cout<<objectCode[i]<<endl;
+    for(int i=0;i<objectCode.size();i++)
+        cout<<objectCode[i]<<endl;
 
-    for(int i=0;i<objectCodeInt.size();i++){
-        std::stringstream ss;
-        ss<<std::hex<<objectCodeInt[i];
-        cout<<ss.str()<<" | "<<location[i]<<endl;
-        ss.str(std::string());
+//    for(int i=0;i<objectCodeInt.size();i++){
+//        std::stringstream ss;
+//        ss<<std::hex<<objectCodeInt[i];
+//        cout<<ss.str()<<" | "<<location[i]<<endl;
+//        ss.str(std::string());
+//    }
 //cout<<objectCodeInt[i]<<endl;
-    }
 //        for(int c=0;c<code.size();c++)
 //            for(int j=0;j<code[c].size();j++)
 //                cout<<code[c][j]<<endl;

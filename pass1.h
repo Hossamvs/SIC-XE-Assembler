@@ -12,7 +12,7 @@
 
 #include "utilities.h"
 
-    int readFile(std::vector<std::vector<std::string>> &code){
+int readFile(std::vector<std::vector<std::string>> &code){
 
         std::ifstream inFile("in.txt");
         std::string temp;

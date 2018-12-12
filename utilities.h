@@ -264,5 +264,14 @@ int handleFormat1(vector<string> line, string instruction ,map<string,string>opT
 
 }
 
+int findInLiteralTable(string literal,vector<vector<string>>literalTable){
+
+        for(int i=0;i<literalTable.size();i++){
+            if(literalTable[i][0]==literal){
+                return hexStringToDec(literalTable[i][3]);
+            }
+}
+}
+
 
 #endif // UTILITIES_H
