@@ -80,6 +80,14 @@ int main(){
 //            for(int j=0;j<code[c].size();j++)
 //                cout<<code[c][j]<<endl;
 
+//for( std::map<std::string,std::string>::const_iterator it = symbolTable.begin(); it != symbolTable.end(); ++it )
+//        {
+//          std::string key = it->first;
+//          //int value = it->second;
+//          std::string value = it->second;
+//          cout<<key<<"\t" << value<<std::endl;
+//
+//        }
 
 
         return 0;

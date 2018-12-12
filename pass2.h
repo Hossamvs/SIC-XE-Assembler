@@ -156,7 +156,7 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
 void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<std::string>&objectCode,std::vector<int>objectCodeInt, std::map<std::string,string> symbolTable,std::vector<std::vector<std::string>>literalTable,std::vector<int> location, int lines){
 
 
-    for(int i=0;i<objectCodeInt.size();i++){
+    for(int i=1,k=0;i<lines;i++,k++){
 
         if(code[i].size()==1){
 
@@ -164,9 +164,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                 objectCode.push_back("-");
             }else{//RSUB
                 if(code[i][0][0]=='+'){
-                    objectCode.push_back(intToHexString(objectCodeInt[i]<<20));
+                    objectCode.push_back(intToHexString(objectCodeInt[k]<<20));
                 }else{
-                    objectCode.push_back(intToHexString(objectCodeInt[i]<<12));
+                    objectCode.push_back(intToHexString(objectCodeInt[k]<<12));
                 }
             }
 
@@ -174,12 +174,12 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
 
                     if(code[i][0][0]=='+'){
                         if(code[i][1][0]=='='){
-                            int temp = objectCodeInt[i];
+                            int temp = objectCodeInt[k];
                             temp = temp <<20;
                             temp |= findInLiteralTable(code[i][1],literalTable);
                             objectCode.push_back(intToHexString(temp));
                         }else{
-                            int temp = objectCodeInt[i];
+                            int temp = objectCodeInt[k];
                             temp = temp<<20;
                             std::string temp3 = (symbolTable.find(code[i][1])->second);
                             int temp2 = hexStringToDec(temp3);
@@ -189,25 +189,25 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
 
                     }else if(code[i][0]=="FIX" || code[i][0]=="FLOAT" || code[i][0]=="HIO" || code[i][0]=="NORM" || code[i][0]=="SIO" || code[i][0]=="TIO" || code[i][0]=="FIX" ){
                         //handle format 1  (opcode)
-                        objectCode.push_back(intToHexString(objectCodeInt[i]));
+                        objectCode.push_back(intToHexString(objectCodeInt[k]));
 
                     }else if(code[i][0]=="ADDR" || code[i][0]=="CLEAR" || code[i][0]=="COMPR" || code[i][0]=="DIVR" || code[i][0]=="MULR" || code[i][0]=="RMO" || code[i][0]=="SHIFTL" || code[i][0]=="SHIFTR" || code[i][0]=="SUBR" || code[i][0]=="SVC" || code[i][0]=="TIXR"){
                          //handle format 2 (opcode , registers)
-                         objectCode.push_back(intToHexString(objectCodeInt[i]));
+                         objectCode.push_back(intToHexString(objectCodeInt[k]));
 
                     }else if(code[i][0]=="BASE"){
                         objectCode.push_back("-");
                     }else{
                          //handle format 3 (opcode , flags)
                         if(code[i][1][0]=='='){
-                            int temp = objectCodeInt[i];
+                            int temp = objectCodeInt[k];
                             temp = temp <<12;
-                            temp |=((findInLiteralTable(code[i][1],literalTable))-location[i+1]);
+                            temp |=((findInLiteralTable(code[i][1],literalTable))-location[k+1]);
                             objectCode.push_back(intToHexString(temp));
                         }else{
-                            int temp = objectCodeInt[i];
+                            int temp = objectCodeInt[k];
                             temp = temp<<12;
-                            temp |= hexStringToDec(symbolTable.find(code[i][1])->second)-location[i+1];
+                            temp |= hexStringToDec(symbolTable.find(code[i][1])->second)-location[k+1];
                             objectCode.push_back(intToHexString(temp));
                         }
                     }
@@ -216,23 +216,23 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
 
                     if(code[i][1][0]=='+'){
                         if(code[i][2][0]=='='){
-                            int temp = objectCodeInt[i];
+                            int temp = objectCodeInt[k];
                             temp = temp <<20;
                             temp |= findInLiteralTable(code[i][2],literalTable);
                             objectCode.push_back(intToHexString(temp));
                         }else{
-                            int temp = objectCodeInt[i];
+                            int temp = objectCodeInt[k];
                             temp = temp<<20;
                             temp |= hexStringToDec(symbolTable.find(code[i][2])->second);
                             objectCode.push_back(intToHexString(temp));
                         }
                     }else if(code[i][1]=="FIX" || code[i][1]=="FLOAT" || code[i][1]=="HIO" || code[i][1]=="NORM" || code[i][1]=="SIO" || code[i][1]=="TIO" || code[i][1]=="FIX" ){
                         //handle format 1  (opcode)
-                        objectCode.push_back(intToHexString(objectCodeInt[i]));
+                        objectCode.push_back(intToHexString(objectCodeInt[k]));
 
                     }else if(code[i][1]=="ADDR" || code[i][1]=="CLEAR" || code[i][1]=="COMPR" || code[i][1]=="DIVR" || code[i][1]=="MULR" || code[i][1]=="RMO" || code[i][1]=="SHIFTL" || code[i][1]=="SHIFTR" || code[i][1]=="SUBR" || code[i][1]=="SVC" || code[i][1]=="TIXR"){
                          //handle format 2 (opcode , registers)
-                         objectCode.push_back(intToHexString(objectCodeInt[i]));
+                         objectCode.push_back(intToHexString(objectCodeInt[k]));
 
                     }else if(code[i][1]=="EQU"){//EQU
 
@@ -252,12 +252,12 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                         }
 
                         for(int j=0;j<stringLength;j+=2){
-                            objectCode.push_back(intToHexString(objectCodeInt[i++]));
+                            objectCode.push_back(intToHexString(objectCodeInt[k++]));
                         }
 
                         if(oddflag){
 
-                            objectCode.push_back(intToHexString(objectCodeInt[i]));
+                            objectCode.push_back(intToHexString(objectCodeInt[k]));
                         }
 
                     }else if((code[i][2][0]=='C' || code[i][2][0]=='c')&& code[i][2].size()>=3){
@@ -279,25 +279,26 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
 
 
                         for(int j=0;j<stringLength - offset;j+=3){
-                            objectCode.push_back(intToHexString(objectCodeInt[i++]));
+                            objectCode.push_back(intToHexString(objectCodeInt[k++]));
                         }
 
                         if(oddflag){
                             for(int j=stringLength-offset;j<stringLength;j++)
-                                objectCode.push_back(intToHexString(objectCodeInt[i++]));
+                                objectCode.push_back(intToHexString(objectCodeInt[k++]));
                         }
 
                     }else{
                          //handle format 3 (opcode , flags)
                         if(code[i][2][0]=='='){
-                            int temp = objectCodeInt[i];
+                            int temp = objectCodeInt[k];
                             temp = temp <<12;
-                            temp |=((findInLiteralTable(code[i][2],literalTable))-location[i+1]);
+                            temp |=((findInLiteralTable(code[i][2],literalTable))-location[k+1]);
                             objectCode.push_back(intToHexString(temp));
                         }else{
-                            int temp = objectCodeInt[i];
+                            int temp = objectCodeInt[k];
                             temp = temp<<12;
-                            temp |= (hexStringToDec(symbolTable.find(code[i][2])->second)-location[i+1]);
+                            temp |= (hexStringToDec(symbolTable.find(code[i][2])->second)-location[k+1]);
+
                             objectCode.push_back(intToHexString(temp));
                         }
 
