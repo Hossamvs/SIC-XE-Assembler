@@ -49,8 +49,75 @@ int handleFormat4(vector<string> line, string instruction ,map<string,string>opT
 
     int opcode = hexStringToDec(opTable.find(cleanedInstruction)->second);
 
+        //to remove n,i
+    opcode &= 252;
+
+
+    if(line.size()==2){
+
+        if(line[1][0]=='@'){
+
+            //set n
+            opcode |=2;
+
+        }else if(line[1][0]=='#'){
+            //set i
+            opcode|=1;
+            opcode = opcode<<4;
+            return opcode;
+
+        }else{
+            //set n,i
+            opcode|=3;
+        }
+
+    }else if(line.size()==3){
+
+        if(line[2][0]=='@'){
+
+            //set n
+            opcode |=2;
+
+        }else if(line[2][0]=='#'){
+
+            //set i
+            opcode|=1;
+            opcode = opcode<<4;
+            return opcode;
+
+        }else{
+            //set n,i
+            opcode|=3;
+        }
+
+    }
+
+    opcode = opcode << 4;
+
+        if(line.size()==2){
+
+        if(line[1][line[1].size()-1]=='x' || line[1][line[1].size()-1]=='X'){
+
+            opcode|=9;  //set x,e
+
+        }else{
+            opcode|=1; //set e only
+        }
+
+
+    }else if(line.size()==3){
+
+        if(line[2][line[2].size()-1]=='x' || line[2][line[2].size()-1]=='X'){
+
+            opcode|=9;  //set x,e
+
+        }else{
+            opcode|=1; //set e only
+        }
+    }
+
     //to set n,i
-    opcode |= 3;
+    /*opcode |= 3;
 
     //make space for x,b,p,e
     opcode = opcode<<4;
@@ -76,7 +143,7 @@ int handleFormat4(vector<string> line, string instruction ,map<string,string>opT
             opcode|=1; //set e only
         }
     }
-
+    */
     return opcode;
 }
 
@@ -267,10 +334,21 @@ int handleFormat1(vector<string> line, string instruction ,map<string,string>opT
 int findInLiteralTable(string literal,vector<vector<string>>literalTable){
 
         for(int i=0;i<literalTable.size();i++){
-            if(literalTable[i][0]==literal){
+            if(literalTable[i][0] == literal){
                 return hexStringToDec(literalTable[i][3]);
             }
+        }
 }
+
+bool checkLiteralTable(string literal,vector<vector<string>>literalTable){
+    bool flag = false;
+    for(int i=0 ; i< literalTable.size();i++){
+        if(literalTable[i][0] == literal){
+            return true;
+        }
+    }
+    return false;
+    //return flag;
 }
 
 
