@@ -155,6 +155,12 @@ int handleFormat3(vector<string> line, string instruction ,map<string,string>opT
     //to remove n,i
     opcode &= 252;
 
+    if(line.size()==1){
+
+        opcode |= 3;
+        opcode = opcode << 4;
+        return opcode;
+    }
 
     if(line.size()==2){
 
