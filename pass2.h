@@ -13,13 +13,25 @@
 
 void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&objectCodeInt, std::map<std::string,std::string>opTable, int lines){
 
+    vector<string>literals;
+
     for(int i=1;i<lines;i++){
 
         if(code[i].size()==1){
 
-            if(code[i][0]=="LTORG"){
-                objectCodeInt.push_back(-1);
-            }else{//RSUB
+                if(code[i][0]== "LTORG" && literals.size()>=1){ //put -1 in object code vector depending on the number of literals
+
+                    for(int j =0;j<literals.size();j++){
+
+                        objectCodeInt.push_back(-1);
+
+                    }
+
+                    literals.clear();
+
+                    continue;
+
+                }else{//RSUB
 
                 if(code[i][0][0]=='+'){
                     //format 4 handle (opcode , flags)
@@ -52,6 +64,11 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
                     }else{
                          //handle format 3 (opcode , flags)
                          objectCodeInt.push_back(handleFormat3(code[i], code[i][0] ,opTable));
+
+                    }
+
+                    if(code[i][1][0] == '=' && std::find(literals.begin(),literals.end(),code[i][1]) == literals.end()){ //detect literals
+                        literals.push_back(code[i][1]);
 
                     }
 
@@ -149,8 +166,40 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
 
                     }
 
+                    if(code[i][2][0] == '=' && std::find(literals.begin(),literals.end(),code[i][2]) == literals.end()){ //detect literals
+                        literals.push_back(code[i][2]);
+
+                    }
         }
     }
+
+    if(literals.size()>=1){ //put -1 in object code vector depending on the number of literals
+
+        for(int j =0;j<literals.size();j++){
+
+                if(literals[j][1] == 'X' || literals[j][1] == 'x'){
+
+                        for(int k=0;k<(int)ceil( (double)(literals[j].substr(3,literals[j].size()-4).size() ) / 2.0 );k++){
+
+                            objectCodeInt.push_back(-1);
+                        }
+
+                }else if(literals[j][1] == 'C' || literals[j][1] == 'c'){
+
+
+                    for(int k=0;k<literals[j].substr(3,literals[j].size()-4).size();k++){
+
+                        objectCodeInt.push_back(-1);
+                    }
+
+                }
+
+        }
+
+        literals.clear();
+
+    }
+
 }
 
 void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<std::string>&objectCode,std::vector<int>objectCodeInt, std::map<std::string,string> symbolTable,std::vector<std::vector<std::string>>literalTable,std::vector<int> location, int lines){
@@ -158,9 +207,14 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
 
     for(int i=1,k=0;i<lines;i++,k++){
 
-        if(code[i].size()==1){
+        if(objectCodeInt[k] == -1){
 
-            if(code[i][0]=="LTORG"){
+            objectCode.push_back("-");
+            continue;
+
+        }else if(code[i].size()==1){
+
+            if(code[i][0]=="LTORG"){ //useless now
                 objectCode.push_back("-");
             }else{//RSUB
                 if(code[i][0][0]=='+'){
@@ -310,6 +364,8 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                         if(oddflag){
 
                             objectCode.push_back(intToHexString(objectCodeInt[k]));
+                        }else{
+                            k--;
                         }
 
                     }else if((code[i][2][0]=='C' || code[i][2][0]=='c')&& code[i][2].size()>=3){
@@ -337,6 +393,10 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                         if(oddflag){
                             for(int j=stringLength-offset;j<stringLength;j++)
                                 objectCode.push_back(intToHexString(objectCodeInt[k++]));
+
+                            k--;
+                        }else{
+                            k--;
                         }
 
                     }else{
