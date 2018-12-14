@@ -24,6 +24,7 @@ int main(){
     vector<vector<string>>literalTable(500);
 
     int lines = readFile(code);
+    int baseAddress;
 
     addressCounter(code,location,literalTable,lines-1);
 
@@ -33,8 +34,8 @@ int main(){
 
     initOpTable(opTable);
 
-    generateOpcode(code,objectCodeInt,opTable,lines-1);
-    generateAddresses(code,objectCode,objectCodeInt,symbolTable,literalTable,location,lines-1);
+    generateOpcode(code,objectCodeInt,opTable,symbolTable,baseAddress,lines-1);
+    generateAddresses(code,objectCode,objectCodeInt,symbolTable,literalTable,location,baseAddress,lines-1);
 
     //createHead(code,location,hteRecord);
     //createText(code,location,hteRecord,objectCode,lines-1);
