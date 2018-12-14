@@ -6,6 +6,7 @@
 #include "pass1.h"
 #include "pass2.h"
 #include "optable.h"
+#include "hte.h"
 
 using namespace std;
 
@@ -36,10 +37,11 @@ int main(){
     generateOpcode(code,objectCodeInt,opTable,lines-1);
     generateAddresses(code,objectCode,objectCodeInt,symbolTable,literalTable,location,lines-1);
 
-    //createHead(code,location,hteRecord);
+    createHead(code,location,hteRecord);
     //createText(code,location,hteRecord,objectCode,lines-1);
-    //createEnd(location,hteRecord);
-    //generateHTEFile(hteRecord);
+    createModification(location,hteRecord,code);
+    createEnd(location,hteRecord);
+    generateHTEFile(hteRecord);
 
     //FOR DEBUGGING
 
