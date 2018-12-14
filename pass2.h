@@ -11,7 +11,7 @@
 #include "optable.h"
 #include "utilities.h"
 
-void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&objectCodeInt, std::map<std::string,std::string>opTable, std::map<std::string,string> symbolTable, int &baseAddress, int lines){
+void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&objectCodeInt, std::map<std::string,std::string>opTable, std::map<std::string,string> symbolTable, std::vector<std::vector<std::string>>literalTable, int &baseAddress, int lines){
 
     vector<string>literals;
 
@@ -23,7 +23,8 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
 
                     for(int j =0;j<literals.size();j++){
 
-                        objectCodeInt.push_back(-1);
+
+                        objectCodeInt.push_back(getLiteralValue(literals[j],literalTable));
 
                     }
 
@@ -184,23 +185,7 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
 
         for(int j =0;j<literals.size();j++){
 
-                if(literals[j][1] == 'X' || literals[j][1] == 'x'){
-
-                        for(int k=0;k<(int)ceil( (double)(literals[j].substr(3,literals[j].size()-4).size() ) / 2.0 );k++){
-
-                            objectCodeInt.push_back(-1);
-                        }
-
-                }else if(literals[j][1] == 'C' || literals[j][1] == 'c'){
-
-
-                    for(int k=0;k<literals[j].substr(3,literals[j].size()-4).size();k++){
-
-                        objectCodeInt.push_back(-1);
-                    }
-
-                }
-
+            objectCodeInt.push_back(getLiteralValue(literals[j],literalTable));
         }
 
         literals.clear();
@@ -211,8 +196,10 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
 
 void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<std::string>&objectCode,std::vector<int>objectCodeInt, std::map<std::string,string> symbolTable,std::vector<std::vector<std::string>>literalTable,std::vector<int> location, int baseAddress, int lines){
 
+    vector<string>literals;
+    int k=0;
 
-    for(int i=1,k=0;i<lines;i++,k++){
+    for(int i=1;i<lines;i++,k++){
 
         if(objectCodeInt[k] == -1){
 
@@ -221,8 +208,16 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
 
         }else if(code[i].size()==1){
 
-            if(code[i][0]=="LTORG"){ //useless now
-                objectCode.push_back("-");
+            if(code[i][0]=="LTORG"){
+
+                for(int j =0;j<literals.size();j++)
+                    objectCode.push_back(intToHexString(objectCodeInt[k++]));
+
+                literals.clear();
+
+                k--;
+
+
             }else{//RSUB
                 if(code[i][0][0]=='+'){
                     objectCode.push_back(intToHexString(objectCodeInt[k] << 20));
@@ -281,6 +276,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 temp = temp <<20;
                                 temp |= findInLiteralTable(code[i][1],literalTable);
                                 objectCode.push_back(intToHexString(temp));
+
+                                if(std::find(literals.begin(),literals.end(),code[i][1]) == literals.end())
+                                    literals.push_back(code[i][1]);
                             }else{
                                 int temp = objectCodeInt[k];
                                 temp = temp<<20;
@@ -407,6 +405,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                             temp |=((findInLiteralTable(code[i][1],literalTable))-location[k+1]);
                             objectCode.push_back(intToHexString(temp));
 
+                            if(std::find(literals.begin(),literals.end(),code[i][1]) == literals.end())
+                                    literals.push_back(code[i][1]);
+
                         }else{
                             int temp = objectCodeInt[k];
                             temp = temp<<12;
@@ -491,6 +492,8 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 temp |= findInLiteralTable(code[i][2],literalTable);
                                 objectCode.push_back(intToHexString(temp));
 
+                                if(std::find(literals.begin(),literals.end(),code[i][2]) == literals.end())
+                                    literals.push_back(code[i][2]);
                         }else{
                             int temp = objectCodeInt[k];
                             temp = temp<<20;
@@ -675,6 +678,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 temp = temp <<12;
                                 temp |=((findInLiteralTable(code[i][2],literalTable))-location[k+1]);
                                 objectCode.push_back(intToHexString(temp));
+
+                                if(std::find(literals.begin(),literals.end(),code[i][2]) == literals.end())
+                                    literals.push_back(code[i][2]);
                         }else{
                             int temp = objectCodeInt[k];
                             temp = temp<<12;
@@ -704,6 +710,13 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
 
                     }
         }
+
     }
+
+    if(literals.size()>=1)
+        for(int j =0;j<literals.size();j++)
+            objectCode.push_back(intToHexString(objectCodeInt[k++]));
+
+
 }
 #endif

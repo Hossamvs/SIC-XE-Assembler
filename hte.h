@@ -85,7 +85,7 @@ void createModification(std::vector<int> location,std::vector<std::string> &hteR
         if(code[i].size() == 2){//size 2 instructions
             if(code[i][0] == "+JSUB"){
                 address = location[i-1]+1;
-                std::cout<<"address is "<<intToHexString(address)<<std::endl;
+                //std::cout<<"address is "<<intToHexString(address)<<std::endl;
 
                 stream<<std::setfill('0') << std::setw(6) << intToHexString(address);
                 temp+=stream.str()+" ";
@@ -102,7 +102,7 @@ void createModification(std::vector<int> location,std::vector<std::string> &hteR
         if(code[i].size() == 3){//size 3 instructions
             if(code[i][1] == "+JSUB"){
                 address = location[i-1]+1;
-                std::cout<<"address is "<<intToHexString(address)<<std::endl;
+                //std::cout<<"address is "<<intToHexString(address)<<std::endl;
                 stream<<std::setfill('0') << std::setw(6) << intToHexString(address);
                 temp+=stream.str()+" ";
                 stream.str(std::string());

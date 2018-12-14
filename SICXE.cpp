@@ -35,7 +35,7 @@ int main(){
 
     initOpTable(opTable);
 
-    generateOpcode(code,objectCodeInt,opTable,symbolTable,baseAddress,lines-1);
+    generateOpcode(code,objectCodeInt,opTable,symbolTable,literalTable,baseAddress,lines-1);
     generateAddresses(code,objectCode,objectCodeInt,symbolTable,literalTable,location,baseAddress,lines-1);
 
     createHead(code,location,hteRecord);

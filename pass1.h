@@ -95,7 +95,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                                  std::string literalContent = literals[j].substr(3,literals[j].size()-4);
 
                                  for(int k=0;k<literalContent.size();k++)
-                                    stream<<(int)literalContent[k];
+                                    stream<<std::hex<<(int)literalContent[k];
 
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL VALUE
                                  stream.str(std::string());
@@ -253,7 +253,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                                  std::string literalContent = literals[j].substr(3,literals[j].size()-4);
 
                                  for(int k=0;k<literalContent.size();k++)
-                                    stream<<(int)literalContent[k];
+                                    stream<<std::hex<<(int)literalContent[k];
 
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL VALUE
                                  stream.str(std::string());

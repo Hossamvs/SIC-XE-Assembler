@@ -357,5 +357,14 @@ bool checkLiteralTable(string literal,vector<vector<string>>literalTable){
     //return flag;
 }
 
+int getLiteralValue(string literal,vector<vector<string>>literalTable){
+
+        for(int i=0;i<literalTable.size();i++){
+            if(literalTable[i][0] == literal){
+                return hexStringToDec(literalTable[i][1]);
+            }
+        }
+}
+
 
 #endif // UTILITIES_H
