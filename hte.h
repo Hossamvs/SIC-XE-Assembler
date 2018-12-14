@@ -34,13 +34,11 @@ void createText(std::vector<std::vector<std::string>> code, std::vector<int> loc
 
     int startLocation = location[0];
     int capacity=60;
-    int dashes=0;
     int length=0;
     int i=0;
     for(i=0;i<objectCode.size();i++){
 
         if(objectCode[i]=="-"){
-            dashes++;
             continue;
         }
 
@@ -52,8 +50,8 @@ void createText(std::vector<std::vector<std::string>> code, std::vector<int> loc
 
             length = location[i] - startLocation;
 
-            startLocation = location[i];
-            cout<<"Location is" <<intToHexString(location[i])<<endl;
+            startLocation = location[i+3];
+            //cout<<"Location is" <<intToHexString(location[i])<<endl; //pour debugging
             stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
             temp.insert(9,stream.str()+" ");
 
@@ -63,7 +61,6 @@ void createText(std::vector<std::vector<std::string>> code, std::vector<int> loc
 
             temp="T ";
             capacity=60;
-            dashes=0;
             continue;
         }
 
@@ -83,7 +80,7 @@ void createText(std::vector<std::vector<std::string>> code, std::vector<int> loc
             length = location[i] - startLocation;
 
             startLocation = location[i];
-cout<<"Location is" <<intToHexString(location[i])<<endl;
+            //cout<<"Location is" <<intToHexString(location[i])<<endl; //pour debugging
             stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
             temp.insert(9,stream.str()+" ");
 
@@ -94,11 +91,10 @@ cout<<"Location is" <<intToHexString(location[i])<<endl;
             temp="T ";
             capacity=60;
             i--;
-            dashes=0;
         }
     }
             i--;
-            length = location[i] - startLocation;
+            length = location[i] - startLocation +1 ;
 
             startLocation = location[i];
 
