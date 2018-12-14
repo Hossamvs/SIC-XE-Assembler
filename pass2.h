@@ -10,6 +10,7 @@
 #include <string>
 #include "optable.h"
 #include "utilities.h"
+#include <ctype.h>
 
 void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&objectCodeInt, std::map<std::string,std::string>opTable, std::map<std::string,string> symbolTable, std::vector<std::vector<std::string>>literalTable, int &baseAddress, int lines){
 
@@ -195,7 +196,7 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
 }
 
 void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<std::string>&objectCode,std::vector<int>objectCodeInt, std::map<std::string,string> symbolTable,std::vector<std::vector<std::string>>literalTable,std::vector<int> location, int baseAddress, int lines){
-
+    stringstream stream;
     vector<string>literals;
     int k=0;
 
@@ -211,7 +212,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
             if(code[i][0]=="LTORG"){
 
                 for(int j =0;j<literals.size();j++)
-                    objectCode.push_back(intToHexString(objectCodeInt[k++]));
+                    stream<<setfill('0')<<setw(6)<<(intToHexString(objectCodeInt[k++]));
+                    objectCode.push_back((stream.str()));
+                    stream.str(std::string());
 
                 literals.clear();
 
@@ -229,19 +232,22 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
         }else if(code[i].size()==2){
                      if(code[i][0][0]=='+'){
                             if(code[i][1][0]=='#'){
-
                                     if(symbolTable.count(code[i][1].substr(1,code[i][1].size()-1))>0){
                                          int temp = objectCodeInt[k];
                                          temp |= 1;
                                          temp = temp << 20;
                                          temp |= (hexStringToDec(symbolTable.find(code[i][1].substr(1,code[i][1].size()-1))->second));
-                                         objectCode.push_back(intToHexString(temp));
+                                         stream<<setfill('0')<<setw(8)<<(intToHexString(temp));
+                                         objectCode.push_back(stream.str());
+                                         stream.str(std::string());
 
                                     }else{
                                             int temp = objectCodeInt[k];
                                             temp = temp << 20;
                                             temp |= hexStringToDec(code[i][1].substr(1,code[i][1].size()-1));
-                                            objectCode.push_back(intToHexString(temp));
+                                            stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                                            objectCode.push_back(stream.str());
+                                            stream.str(std::string());
                                     }
 
                             }else if(code[i][1][0]=='@'){
@@ -253,7 +259,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                          int calcAns = (hexStringToDec(symbolTable.find(code[i][1].substr(1,code[i][1].size()-1))->second)) - location[k+1];
                                          calcAns = calcAns & 1048575;
                                          temp |= calcAns;
-                                         objectCode.push_back(intToHexString(temp));
+                                         stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                                         objectCode.push_back(stream.str());
+                                         stream.str(std::string());
 
                                     }
 
@@ -266,7 +274,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                          int calcAns = (hexStringToDec(symbolTable.find(code[i][1].substr(0,code[i][1].size()-2))->second)) - location[k+1];
                                          calcAns = calcAns & 1048575;
                                          temp |= calcAns;
-                                         objectCode.push_back(intToHexString(temp));
+                                         stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                                         objectCode.push_back(stream.str());
+                                         stream.str(std::string());
 
                                     }
 
@@ -275,7 +285,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 int temp = objectCodeInt[k];
                                 temp = temp <<20;
                                 temp |= findInLiteralTable(code[i][1],literalTable);
-                                objectCode.push_back(intToHexString(temp));
+                                stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                                objectCode.push_back(stream.str());
+                                stream.str(std::string());
 
                                 if(std::find(literals.begin(),literals.end(),code[i][1]) == literals.end())
                                     literals.push_back(code[i][1]);
@@ -285,7 +297,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 std::string temp3 = (symbolTable.find(code[i][1])->second);
                                 int temp2 = hexStringToDec(temp3);
                                 temp = temp |temp2;
-                                objectCode.push_back(intToHexString(temp));
+                                stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                                objectCode.push_back(stream.str());
+                                stream.str(std::string());
                             }
 
                     }else if(code[i][0]=="FIX" || code[i][0]=="FLOAT" || code[i][0]=="HIO" || code[i][0]=="NORM" || code[i][0]=="SIO" || code[i][0]=="TIO" || code[i][0]=="FIX" ){
@@ -324,15 +338,18 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                     calcAns = calcAns & 4095;
                                     temp|= calcAns;
                                 }
-
-                                objectCode.push_back(intToHexString(temp));
+                                    stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                                    objectCode.push_back(stream.str());
+                                    stream.str(std::string());
                             }
                     else
                         {
                             int temp = objectCodeInt[k];
                             temp = temp << 12;
                             temp |= hexStringToDec(code[i][1].substr(1,code[i][1].size()-1));
-                            objectCode.push_back(intToHexString(temp));
+                            stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                            objectCode.push_back(stream.str());
+                            stream.str(std::string());
                         }
 
                     }else if(code[i][1][0]=='@'){
@@ -361,8 +378,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                             calcAns = calcAns & 4095;
                                             temp|= calcAns;
                                         }
-
-                                         objectCode.push_back(intToHexString(temp));
+                                        stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                                        objectCode.push_back(stream.str());
+                                        stream.str(std::string());
 
                                 }
 
@@ -392,9 +410,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                         calcAns = calcAns & 4095;
                                         temp|= calcAns;
                                     }
-
-                                    objectCode.push_back(intToHexString(temp));
-
+                                    stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                                    objectCode.push_back(stream.str());
+                                    stream.str(std::string());
                             }
 
 
@@ -403,7 +421,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                             int temp = objectCodeInt[k];
                             temp = temp <<12;
                             temp |=((findInLiteralTable(code[i][1],literalTable))-location[k+1]);
-                            objectCode.push_back(intToHexString(temp));
+                            stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                            objectCode.push_back(stream.str());
+                            stream.str(std::string());
 
                             if(std::find(literals.begin(),literals.end(),code[i][1]) == literals.end())
                                     literals.push_back(code[i][1]);
@@ -431,8 +451,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 calcAns = calcAns & 4095;
                                 temp|= calcAns;
                             }
-
-                            objectCode.push_back(intToHexString(temp));
+                            stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                            objectCode.push_back(stream.str());
+                            stream.str(std::string());
                         }
                     }
 
@@ -448,13 +469,16 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                          int calcAns=(hexStringToDec(symbolTable.find(code[i][2].substr(1,code[i][2].size()-1))->second)) - location[k+1];
                                          calcAns = calcAns & 1048575;
                                          temp |= calcAns;
-                                         objectCode.push_back(intToHexString(temp));
-
+                                         stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                                         objectCode.push_back(stream.str());
+                                         stream.str(std::string());
                                     }else{
                                         int temp = objectCodeInt[k];
                                         temp = temp << 20;
                                         temp |= hexStringToDec(code[i][2].substr(1,code[i][2].size()-1));
-                                        objectCode.push_back(intToHexString(temp));
+                                        stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                                        objectCode.push_back(stream.str());
+                                        stream.str(std::string());
                                 }
 
                             }else if(code[i][2][0]=='@'){
@@ -467,7 +491,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                          int calcAns=(hexStringToDec(symbolTable.find(code[i][2].substr(1,code[i][2].size()-1))->second)) - location[k+1];
                                          calcAns = calcAns & 1048575;
                                          temp |= calcAns;
-                                         objectCode.push_back(intToHexString(temp));
+                                         stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                                         objectCode.push_back(stream.str());
+                                         stream.str(std::string());
 
                                 }
 
@@ -480,7 +506,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                          int calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(0,code[i][2].size()-2))->second)) - location[k+1];
                                          calcAns = calcAns & 1048575;
                                          temp |= calcAns;
-                                         objectCode.push_back(intToHexString(temp));
+                                         stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                                         objectCode.push_back(stream.str());
+                                         stream.str(std::string());
 
                                     }
 
@@ -490,7 +518,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 int temp = objectCodeInt[k];
                                 temp = temp <<20;
                                 temp |= findInLiteralTable(code[i][2],literalTable);
-                                objectCode.push_back(intToHexString(temp));
+                                stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                                objectCode.push_back(stream.str());
+                                stream.str(std::string());
 
                                 if(std::find(literals.begin(),literals.end(),code[i][2]) == literals.end())
                                     literals.push_back(code[i][2]);
@@ -498,7 +528,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                             int temp = objectCodeInt[k];
                             temp = temp<<20;
                             temp |= hexStringToDec(symbolTable.find(code[i][2])->second);
-                            objectCode.push_back(intToHexString(temp));
+                            stream<<setfill('0')<<setw(8)<<intToHexString(temp);
+                            objectCode.push_back(stream.str());
+                            stream.str(std::string());
                         }
                     }else if(code[i][1]=="FIX" || code[i][1]=="FLOAT" || code[i][1]=="HIO" || code[i][1]=="NORM" || code[i][1]=="SIO" || code[i][1]=="TIO" || code[i][1]=="FIX" ){
                         //handle format 1  (opcode)
@@ -596,14 +628,18 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                             temp|= calcAns;
                                         }
 
-                                         objectCode.push_back(intToHexString(temp));
+                                        stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                                        objectCode.push_back(stream.str());
+                                        stream.str(std::string());
                                     }
                             else
                                 {
                                     int temp = objectCodeInt[k];
                                     temp = temp << 12;
                                     temp |= hexStringToDec(code[i][2].substr(1,code[i][2].size()-1));
-                                    objectCode.push_back(intToHexString(temp));
+                                    stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                                    objectCode.push_back(stream.str());
+                                    stream.str(std::string());
                                 }
 
                             }else if(code[i][2][0]=='@'){
@@ -635,8 +671,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                         }
 
 
-                                         objectCode.push_back(intToHexString(temp));
-
+                                        stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                                        objectCode.push_back(stream.str());
+                                        stream.str(std::string());
                                 }
 
                             }else if(code[i][2].substr(code[i][2].size()-2,2) == ",X"){
@@ -667,8 +704,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                         }
 
 
-                                         objectCode.push_back(intToHexString(temp));
-
+                                        stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                                        objectCode.push_back(stream.str());
+                                        stream.str(std::string());
                                     }
 
 
@@ -677,7 +715,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 int temp = objectCodeInt[k];
                                 temp = temp <<12;
                                 temp |=((findInLiteralTable(code[i][2],literalTable))-location[k+1]);
-                                objectCode.push_back(intToHexString(temp));
+                                stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                                objectCode.push_back(stream.str());
+                                stream.str(std::string());
 
                                 if(std::find(literals.begin(),literals.end(),code[i][2]) == literals.end())
                                     literals.push_back(code[i][2]);
@@ -705,8 +745,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 temp|= calcAns;
                             }
 
-                            objectCode.push_back(intToHexString(temp));
-                        }
+                            stream<<setfill('0')<<setw(6)<<intToHexString(temp);
+                            objectCode.push_back(stream.str());
+                            stream.str(std::string());                        }
 
                     }
         }
@@ -715,7 +756,9 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
 
     if(literals.size()>=1)
         for(int j =0;j<literals.size();j++)
-            objectCode.push_back(intToHexString(objectCodeInt[k++]));
+            stream<<setfill('0')<<setw(2)<<intToHexString(objectCodeInt[k++]);
+            objectCode.push_back(stream.str());
+            stream.str(std::string());
 
 
 }

@@ -39,7 +39,7 @@ int main(){
     generateAddresses(code,objectCode,objectCodeInt,symbolTable,literalTable,location,baseAddress,lines-1);
 
     createHead(code,location,hteRecord);
-    //createText(code,location,hteRecord,objectCode,lines-1);
+    createText(code,location,hteRecord,objectCode,lines-1);
     createModification(location,hteRecord,code);
     createEnd(location,hteRecord);
     generateHTEFile(hteRecord);
