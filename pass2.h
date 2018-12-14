@@ -11,7 +11,7 @@
 #include "optable.h"
 #include "utilities.h"
 
-void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&objectCodeInt, std::map<std::string,std::string>opTable, int lines){
+void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&objectCodeInt, std::map<std::string,std::string>opTable, std::map<std::string,string> symbolTable, int &baseAddress, int lines){
 
     vector<string>literals;
 
@@ -61,6 +61,8 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
                     }else if(code[i][0]=="BASE"){
                         objectCodeInt.push_back(-1);
 
+                        baseAddress = hexStringToDec(symbolTable.find(code[i][1])->second);
+
                     }else{
                          //handle format 3 (opcode , flags)
                          objectCodeInt.push_back(handleFormat3(code[i], code[i][0] ,opTable));
@@ -86,6 +88,11 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
                     }else if(code[i][1]=="ADDR" || code[i][1]=="CLEAR" || code[i][1]=="COMPR" || code[i][1]=="DIVR" || code[i][1]=="MULR" || code[i][1]=="RMO" || code[i][1]=="SHIFTL" || code[i][1]=="SHIFTR" || code[i][1]=="SUBR" || code[i][1]=="SVC" || code[i][1]=="TIXR"){
                          //handle format 2 (opcode , registers)
                          objectCodeInt.push_back(handleFormat2(code[i], code[i][1] ,opTable));
+
+                    }else if(code[i][1]=="BASE"){
+                         objectCodeInt.push_back(-1);
+
+                         baseAddress = hexStringToDec(symbolTable.find(code[i][2])->second);
 
                     }else if(code[i][1]=="EQU"){//EQU
 
@@ -202,7 +209,7 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
 
 }
 
-void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<std::string>&objectCode,std::vector<int>objectCodeInt, std::map<std::string,string> symbolTable,std::vector<std::vector<std::string>>literalTable,std::vector<int> location, int lines){
+void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<std::string>&objectCode,std::vector<int>objectCodeInt, std::map<std::string,string> symbolTable,std::vector<std::vector<std::string>>literalTable,std::vector<int> location, int baseAddress, int lines){
 
 
     for(int i=1,k=0;i<lines;i++,k++){
@@ -291,7 +298,7 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                          //handle format 2 (opcode , registers)
                          objectCode.push_back(intToHexString(objectCodeInt[k]));
 
-                    }else if(code[i][0]=="BASE"){
+                    }else if(code[i][0]=="BASE"){ //useless now
                         objectCode.push_back("-");
                     }else{
                          //handle format 3 (opcode , flags)
@@ -301,8 +308,25 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 temp |= 2;
                                 temp = temp << 12;
                                 int calcAns = (hexStringToDec(symbolTable.find(code[i][1].substr(1,code[i][1].size()-1))->second))-location[k+1];
-                                calcAns = calcAns & 4095;
-                                temp |= calcAns;
+
+                                //check for PC range
+                                if(calcAns >= -2048 && calcAns <= 2047){
+
+                                    calcAns = calcAns & 4095;
+                                    temp |= calcAns;
+
+                                }else{
+
+                                    //set b flag
+                                    temp|=16384;
+
+                                    //clear p flag and clear e flag (dont know why it's set in the first place)
+                                    temp&=16764927;
+                                    calcAns = (hexStringToDec(symbolTable.find(code[i][1].substr(1,code[i][1].size()-1))->second))-baseAddress;
+                                    calcAns = calcAns & 4095;
+                                    temp|= calcAns;
+                                }
+
                                 objectCode.push_back(intToHexString(temp));
                             }
                     else
@@ -320,8 +344,26 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                          temp |= 2;
                                          temp = temp << 12;
                                          int calcAns=(hexStringToDec(symbolTable.find(code[i][1].substr(1,code[i][1].size()-1))->second)) - location[k+1];
-                                         calcAns = calcAns & 4095;
-                                         temp |= calcAns;
+
+                                         //check for PC range
+                                        if(calcAns >= -2048 && calcAns <= 2047){
+
+                                            calcAns = calcAns & 4095;
+                                            temp |= calcAns;
+
+                                        }else{
+
+                                            //set b flag
+                                            temp|=16384;
+
+                                            //clear p flag and clear e flag (dont know why it's set in the first place)
+                                            temp&=16764927;
+
+                                            calcAns = (hexStringToDec(symbolTable.find(code[i][1].substr(1,code[i][1].size()-1))->second))-baseAddress;
+                                            calcAns = calcAns & 4095;
+                                            temp|= calcAns;
+                                        }
+
                                          objectCode.push_back(intToHexString(temp));
 
                                 }
@@ -333,14 +375,32 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                     temp |= 3;
                                     temp = temp << 12;
                                     int calcAns = (hexStringToDec(symbolTable.find(code[i][1].substr(0,code[i][1].size()-2))->second)) - location[k+1];
-                                    calcAns = calcAns & 4095;
-                                    temp |= calcAns;
+
+                                    //check for PC range
+                                    if(calcAns >= -2048 && calcAns <= 2047){
+
+                                        calcAns = calcAns & 4095;
+                                        temp |= calcAns;
+
+                                    }else{
+
+                                        //set b flag
+                                        temp|=16384;
+
+                                        //cclear p flag and clear e flag (dont know why it's set in the first place)
+                                        temp&=16764927;
+
+                                        calcAns = (hexStringToDec(symbolTable.find(code[i][1].substr(0,code[i][1].size()-2))->second))-baseAddress;
+                                        calcAns = calcAns & 4095;
+                                        temp|= calcAns;
+                                    }
+
                                     objectCode.push_back(intToHexString(temp));
 
                             }
 
 
-                    }else if(code[i][1][0]=='='){
+                    }else if(code[i][1][0]=='='){// SHOULD WE DO BASE ADDRESSING?-----------
 
                             int temp = objectCodeInt[k];
                             temp = temp <<12;
@@ -351,8 +411,25 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                             int temp = objectCodeInt[k];
                             temp = temp<<12;
                             int calcAns = hexStringToDec(symbolTable.find(code[i][1])->second)-location[k+1];
-                            calcAns = calcAns & 4095;
-                            temp |= calcAns;
+
+                            //check for PC range
+                            if(calcAns >= -2048 && calcAns <= 2047){
+
+                                calcAns = calcAns & 4095;
+                                temp |= calcAns;
+
+                            }else{
+
+                                //set b flag
+                                temp|=16384;
+
+                                //clear p flag and clear e flag (dont know why it's set in the first place)
+                                temp&=16764927;
+
+                                calcAns = (hexStringToDec(symbolTable.find(code[i][1])->second))-baseAddress;
+                                calcAns = calcAns & 4095;
+                                temp|= calcAns;
+                            }
 
                             objectCode.push_back(intToHexString(temp));
                         }
@@ -496,8 +573,26 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                          temp |= 1;
                                          temp = temp << 12;
                                          int calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(1,code[i][2].size()-1))->second)) - location[k+1];
-                                         calcAns = calcAns & 4095;
-                                         temp |= calcAns;
+
+                                         //check for PC range
+                                        if(calcAns >= -2048 && calcAns <= 2047){
+
+                                            calcAns = calcAns & 4095;
+                                            temp |= calcAns;
+
+                                        }else{
+
+                                            //set b flag
+                                            temp|=16384;
+
+                                            //clear p flag and clear e flag (dont know why it's set in the first place)
+                                            temp&=16764927;
+
+                                            calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(1,code[i][2].size()-1))->second))-baseAddress;
+                                            calcAns = calcAns & 4095;
+                                            temp|= calcAns;
+                                        }
+
                                          objectCode.push_back(intToHexString(temp));
                                     }
                             else
@@ -516,8 +611,27 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                          temp |= 2;
                                          temp = temp << 12;
                                          int calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(1,code[i][2].size()-1))->second)) - location[k+1];
-                                         calcAns = calcAns & 4095;
-                                         temp |= calcAns;
+
+                                         //check for PC range
+                                        if(calcAns >= -2048 && calcAns <= 2047){
+
+                                            calcAns = calcAns & 4095;
+                                            temp |= calcAns;
+
+                                        }else{
+
+                                            //set b flag
+                                            temp|=16384;
+
+                                            //clear p flag and clear e flag (dont know why it's set in the first place)
+                                            temp&=16764927;
+
+                                            calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(1,code[i][2].size()-1))->second))-baseAddress;
+                                            calcAns = calcAns & 4095;
+                                            temp|= calcAns;
+                                        }
+
+
                                          objectCode.push_back(intToHexString(temp));
 
                                 }
@@ -529,14 +643,33 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                          temp |= 3;
                                          temp = temp << 12;
                                          int calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(0,code[i][2].size()-2))->second)) - location[k+1];
-                                         calcAns = calcAns & 4095;
-                                         temp |= calcAns;
+
+                                         //check for PC range
+                                        if(calcAns >= -2048 && calcAns <= 2047){
+
+                                            calcAns = calcAns & 4095;
+                                            temp |= calcAns;
+
+                                        }else{
+
+                                            //set b flag
+                                            temp|=16384;
+
+                                            //clear p flag and clear e flag (dont know why it's set in the first place)
+                                            temp&=16764927;
+
+                                            calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(0,code[i][2].size()-2))->second))-baseAddress;
+                                            calcAns = calcAns & 4095;
+                                            temp|= calcAns;
+                                        }
+
+
                                          objectCode.push_back(intToHexString(temp));
 
                                     }
 
 
-                            }else if(code[i][2][0]=='='){
+                            }else if(code[i][2][0]=='='){ //SAME COMMENT AS IN SIZE 2
 
                                 int temp = objectCodeInt[k];
                                 temp = temp <<12;
@@ -546,8 +679,25 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                             int temp = objectCodeInt[k];
                             temp = temp<<12;
                             int calcAns = (hexStringToDec(symbolTable.find(code[i][2])->second)-location[k+1]);
-                            calcAns = calcAns & 4095;
-                            temp |= calcAns;
+
+                            //check for PC range
+                            if(calcAns >= -2048 && calcAns <= 2047){
+
+                                calcAns = calcAns & 4095;
+                                temp |= calcAns;
+
+                            }else{
+
+                                //set b flag
+                                temp|=16384;
+
+                                //clear p flag and clear e flag (dont know why it's set in the first place)
+                                temp&=16764927;
+
+                                calcAns = (hexStringToDec(symbolTable.find(code[i][2])->second))-baseAddress;
+                                calcAns = calcAns & 4095;
+                                temp|= calcAns;
+                            }
 
                             objectCode.push_back(intToHexString(temp));
                         }
