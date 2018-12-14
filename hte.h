@@ -12,7 +12,7 @@
 void createHead(std::vector<std::vector<std::string>> code, std::vector<int> location, std::vector<std::string> &hteRecord){
 
     std::stringstream stream;
-    int progLength = location[location.size()-1] - location[0];
+    int progLength = location[location.size()-1] - location[0] + 1;
 
     std::string temp="H ";
     temp+=code[0][0]+" "; // program name
@@ -27,16 +27,43 @@ void createHead(std::vector<std::vector<std::string>> code, std::vector<int> loc
     hteRecord.push_back(temp);
 
 }
-
 void createText(std::vector<std::vector<std::string>> code, std::vector<int> location, std::vector<std::string> &hteRecord, std::vector<std::string>objectCode,int lines){
 
     std::stringstream stream;
     std::string temp = "T ";
-    int startLocation = location[0];
 
-    for(int i=0;i<objectCode.size();i++){
+    int startLocation = location[0];
+    int capacity=60;
+    int dashes=0;
+    int length=0;
+    int i=0;
+    for(i=0;i<objectCode.size();i++){
 
         if(objectCode[i]=="-"){
+            dashes++;
+            continue;
+        }
+
+        if(objectCode[i]=="--"){
+
+            if(temp.size()<3){
+                continue;
+            }
+
+            length = location[i] - startLocation;
+
+            startLocation = location[i];
+            cout<<"Location is" <<intToHexString(location[i])<<endl;
+            stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
+            temp.insert(9,stream.str()+" ");
+
+            stream.str(std::string());
+
+            hteRecord.push_back(temp);
+
+            temp="T ";
+            capacity=60;
+            dashes=0;
             continue;
         }
 
@@ -47,13 +74,61 @@ void createText(std::vector<std::vector<std::string>> code, std::vector<int> loc
             stream.str(std::string());
         }
 
-        temp+=objectCode[i] + " ";
 
-        if(((i+1)%10==0 && i!=0) || objectCode[i+1]=="-"){
+        if(objectCode[i].size() <= capacity){
+            temp+=objectCode[i] + " ";
+            capacity-=objectCode[i].size();
+        }
+        else{
+            length = location[i] - startLocation;
 
-            int length = location[i+1] - startLocation;
+            startLocation = location[i];
+cout<<"Location is" <<intToHexString(location[i])<<endl;
+            stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
+            temp.insert(9,stream.str()+" ");
 
-            startLocation = location[i+1];
+            stream.str(std::string());
+
+            hteRecord.push_back(temp);
+
+            temp="T ";
+            capacity=60;
+            i--;
+            dashes=0;
+        }
+    }
+            i--;
+            length = location[i] - startLocation;
+
+            startLocation = location[i];
+
+            stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
+            temp.insert(9,stream.str()+" ");
+
+            stream.str(std::string());
+
+            hteRecord.push_back(temp);
+
+
+}
+/*void createText(std::vector<std::vector<std::string>> code, std::vector<int> location, std::vector<std::string> &hteRecord, std::vector<std::string>objectCode,int lines){
+
+    std::stringstream stream;
+    std::string temp = "T ";
+    int startAddress=location[0];
+    int endAddress=location[1];
+    int capacity = 60;
+    int length=0;
+
+    for(int i=0 ; i<objectCode.size() ; i++){
+        if(objectCode[i] == "--" || objectCode[i].size() > capacity){
+            if(temp.size()<3){
+                continue;
+            }
+            length = endAddress - startAddress;
+
+            startAddress = endAddress;
+            //endAddress = lo TODO
 
             stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
             temp.insert(9,stream.str()+" ");
@@ -63,9 +138,21 @@ void createText(std::vector<std::vector<std::string>> code, std::vector<int> loc
             hteRecord.push_back(temp);
 
             temp="T ";
+            capacity=60;
+        }
+        else if(objectCode[i] == "-"){
+            continue;
+        }else if(temp == "T "){
+            stream<<std::setfill('0') << std::setw(6) << std::hex << startAddress ;
+            temp+=stream.str() + " ";
+            stream.str(std::string());
+        }else {
+            temp+=objectCode[i] + " ";
+            capacity-=objectCode[i].size();
+            endAddress=location[i+1];
         }
     }
-}
+}*/
 
 void createEnd(std::vector<int> location, std::vector<std::string> &hteRecord){
 

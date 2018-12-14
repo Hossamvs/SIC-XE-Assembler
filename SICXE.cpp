@@ -70,8 +70,7 @@ int main(){
 //    }
 
     for(int i=0;i<objectCode.size();i++)
-        cout<<objectCode[i]<<" | "<<location[i]<<endl;
-
+        cout<<objectCode[i]<<" | "<<intToHexString(location[i])<<endl;
 //    for(int i=0;i<objectCodeInt.size();i++){
 //        std::stringstream ss;
 //        ss<<std::hex<<objectCodeInt[i];

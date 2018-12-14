@@ -102,7 +102,7 @@ void generateOpcode(std::vector<std::vector<std::string>>code, std::vector<int>&
 
                     }else if(code[i][1]=="RESW" || code[i][1]=="RESB"){
 
-                            objectCodeInt.push_back(-1);
+                            objectCodeInt.push_back(-2);
 
                     }else if((code[i][2][0]=='X' || code[i][2][0]=='x')&& code[i][2].size()>=3){
                         std::string temp, declaredValue;
@@ -546,7 +546,7 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
 
                     }else if(code[i][1]=="RESW" || code[i][1]=="RESB"){
 
-                            objectCode.push_back("-");
+                            objectCode.push_back("--");
 
                     }else if((code[i][2][0]=='X' || code[i][2][0]=='x')&& code[i][2].size()>=3){
                         int stringLength = code[i][2].substr(2,code[i][2].size()-3).size();
