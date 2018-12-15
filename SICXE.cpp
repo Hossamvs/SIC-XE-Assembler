@@ -69,8 +69,11 @@ int main(){
 //
 //    }
 
-    for(int i=0;i<objectCode.size();i++)
-        cout<<objectCode[i]<<" | "<<intToHexString(location[i])<<endl;
+    for(int i=0;i<objectCode.size();i++){
+        cout<<std::setfill('0')<<std::setw(4)<<intToHexString(location[i]);
+        cout<<" | "<<objectCode[i]<<endl;
+    }
+
 //    for(int i=0;i<objectCodeInt.size();i++){
 //        std::stringstream ss;
 //        ss<<std::hex<<objectCodeInt[i];
@@ -92,6 +95,6 @@ int main(){
 //        }
 
 
-        return 0;
+    return 0;
 }
 

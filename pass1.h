@@ -78,7 +78,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL SIZE
                                  stream.str(std::string());
 
-                                 stream<<std::hex<<address;
+                                 stream<<std::hex<< std::setfill('0') << std::setw(4)<<address;
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL ADDRESS
                                  stream.str(std::string());
 
@@ -104,7 +104,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL SIZE
                                  stream.str(std::string());
 
-                                 stream<<std::hex<<address;
+                                 stream<<std::hex<< std::setfill('0') << std::setw(4)<<address;
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL ADDRESS
                                  stream.str(std::string());
 
@@ -236,7 +236,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL SIZE
                                  stream.str(std::string());
 
-                                 stream<<std::hex<<address;
+                                 stream<<std::hex<< std::setfill('0') << std::setw(4)<<address;
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL ADDRESS
                                  stream.str(std::string());
 
@@ -262,7 +262,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL SIZE
                                  stream.str(std::string());
 
-                                 stream<<std::hex<<address;
+                                 stream<<std::hex<< std::setfill('0') << std::setw(4)<<address;
                                  literalTable[literalTableIndex].push_back(stream.str()); // LITERAL ADDRESS
                                  stream.str(std::string());
 
@@ -278,7 +278,7 @@ void addressCounter(std::vector<std::vector<std::string>> code, std::vector<int>
                     } // END EMPTYING LOOP
 
                     literals.clear();
-
+                    location.push_back(address);
         }
 
     return;

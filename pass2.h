@@ -303,17 +303,17 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                             }
 
                     }else if(code[i][0]=="FIX" || code[i][0]=="FLOAT" || code[i][0]=="HIO" || code[i][0]=="NORM" || code[i][0]=="SIO" || code[i][0]=="TIO" || code[i][0]=="FIX" ){
-                        //handle format 1  (opcode)
+                        //handle format 1
                         objectCode.push_back(intToHexString(objectCodeInt[k]));
 
                     }else if(code[i][0]=="ADDR" || code[i][0]=="CLEAR" || code[i][0]=="COMPR" || code[i][0]=="DIVR" || code[i][0]=="MULR" || code[i][0]=="RMO" || code[i][0]=="SHIFTL" || code[i][0]=="SHIFTR" || code[i][0]=="SUBR" || code[i][0]=="SVC" || code[i][0]=="TIXR"){
-                         //handle format 2 (opcode , registers)
+                         //handle format 2
                          objectCode.push_back(intToHexString(objectCodeInt[k]));
 
                     }else if(code[i][0]=="BASE"){ //useless now
                         objectCode.push_back("-");
                     }else{
-                         //handle format 3 (opcode , flags)
+                         //handle format 3
                     if(code[i][1][0]=='#'){
                             if(symbolTable.count(code[i][1].substr(1,code[i][1].size()-1))>0){
                                 int temp = objectCodeInt[k];
@@ -403,7 +403,7 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                         //set b flag
                                         temp|=16384;
 
-                                        //cclear p flag and clear e flag (dont know why it's set in the first place)
+                                        //clear p flag and clear e flag (don't know why it's set in the first place)
                                         temp&=16764927;
 
                                         calcAns = (hexStringToDec(symbolTable.find(code[i][1].substr(0,code[i][1].size()-2))->second))-baseAddress;
@@ -416,7 +416,7 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                             }
 
 
-                    }else if(code[i][1][0]=='='){// SHOULD WE DO BASE ADDRESSING?-----------
+                    }else if(code[i][1][0]=='='){
 
                             int temp = objectCodeInt[k];
                             temp = temp <<12;
@@ -444,7 +444,7 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 //set b flag
                                 temp|=16384;
 
-                                //clear p flag and clear e flag (dont know why it's set in the first place)
+                                //clear p flag and clear e flag (don't know why it's set in the first place)
                                 temp&=16764927;
 
                                 calcAns = (hexStringToDec(symbolTable.find(code[i][1])->second))-baseAddress;
@@ -533,14 +533,14 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                             stream.str(std::string());
                         }
                     }else if(code[i][1]=="FIX" || code[i][1]=="FLOAT" || code[i][1]=="HIO" || code[i][1]=="NORM" || code[i][1]=="SIO" || code[i][1]=="TIO" || code[i][1]=="FIX" ){
-                        //handle format 1  (opcode)
+                        //handle format 1
                         objectCode.push_back(intToHexString(objectCodeInt[k]));
 
                     }else if(code[i][1]=="ADDR" || code[i][1]=="CLEAR" || code[i][1]=="COMPR" || code[i][1]=="DIVR" || code[i][1]=="MULR" || code[i][1]=="RMO" || code[i][1]=="SHIFTL" || code[i][1]=="SHIFTR" || code[i][1]=="SUBR" || code[i][1]=="SVC" || code[i][1]=="TIXR"){
-                         //handle format 2 (opcode , registers)
+                         //handle format 2
                          objectCode.push_back(intToHexString(objectCodeInt[k]));
 
-                    }else if(code[i][1]=="EQU"){//EQU
+                    }else if(code[i][1]=="EQU"){
 
                         objectCode.push_back("-");
 
@@ -600,12 +600,12 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                         }
 
                     }else{
-                         //handle format 3 (opcode , flags)
+                         //handle format 3
                             if(code[i][2][0]=='#'){
 
                                     if(symbolTable.count(code[i][2].substr(1,code[i][2].size()-1))>0){
                                         int temp = objectCodeInt[k];
-                                         temp |= 1;
+                                         temp |= 2;
                                          temp = temp << 12;
                                          int calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(1,code[i][2].size()-1))->second)) - location[k+1];
 
@@ -620,7 +620,7 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                             //set b flag
                                             temp|=16384;
 
-                                            //clear p flag and clear e flag (dont know why it's set in the first place)
+                                            //clear p flag and clear e flag (don't know why it's set in the first place)
                                             temp&=16764927;
 
                                             calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(1,code[i][2].size()-1))->second))-baseAddress;
@@ -662,7 +662,7 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                             //set b flag
                                             temp|=16384;
 
-                                            //clear p flag and clear e flag (dont know why it's set in the first place)
+                                            //clear p flag and clear e flag (don't know why it's set in the first place)
                                             temp&=16764927;
 
                                             calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(1,code[i][2].size()-1))->second))-baseAddress;
@@ -695,7 +695,7 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                             //set b flag
                                             temp|=16384;
 
-                                            //clear p flag and clear e flag (dont know why it's set in the first place)
+                                            //clear p flag and clear e flag (don't know why it's set in the first place)
                                             temp&=16764927;
 
                                             calcAns = (hexStringToDec(symbolTable.find(code[i][2].substr(0,code[i][2].size()-2))->second))-baseAddress;
@@ -710,7 +710,7 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                     }
 
 
-                            }else if(code[i][2][0]=='='){ //SAME COMMENT AS IN SIZE 2
+                            }else if(code[i][2][0]=='='){
 
                                 int temp = objectCodeInt[k];
                                 temp = temp <<12;
@@ -737,7 +737,7 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
                                 //set b flag
                                 temp|=16384;
 
-                                //clear p flag and clear e flag (dont know why it's set in the first place)
+                                //clear p flag and clear e flag (don't know why it's set in the first place)
                                 temp&=16764927;
 
                                 calcAns = (hexStringToDec(symbolTable.find(code[i][2])->second))-baseAddress;
@@ -747,14 +747,16 @@ void generateAddresses(std::vector<std::vector<std::string>>code, std::vector<st
 
                             stream<<setfill('0')<<setw(6)<<intToHexString(temp);
                             objectCode.push_back(stream.str());
-                            stream.str(std::string());                        }
+                            stream.str(std::string());
+
+                            }
 
                     }
         }
 
     }
 
-    if(literals.size()>=1)
+    if(literals.size()>=1)  //push remaining literals
         for(int j =0;j<literals.size();j++)
             stream<<setfill('0')<<setw(2)<<intToHexString(objectCodeInt[k++]);
             objectCode.push_back(stream.str());

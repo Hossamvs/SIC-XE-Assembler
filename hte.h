@@ -12,7 +12,7 @@
 void createHead(std::vector<std::vector<std::string>> code, std::vector<int> location, std::vector<std::string> &hteRecord){
 
     std::stringstream stream;
-    int progLength = location[location.size()-1] - location[0] + 1;
+    int progLength = location[location.size()-1] - location[0];
 
     std::string temp="H ";
     temp+=code[0][0]+" "; // program name
@@ -29,126 +29,74 @@ void createHead(std::vector<std::vector<std::string>> code, std::vector<int> loc
 }
 void createText(std::vector<std::vector<std::string>> code, std::vector<int> location, std::vector<std::string> &hteRecord, std::vector<std::string>objectCode,int lines){
 
-    std::stringstream stream;
-    std::string temp = "T ";
-
-    int startLocation = location[0];
     int capacity=60;
-    int length=0;
-    int i=0;
-    for(i=0;i<objectCode.size();i++){
+    std::vector<std::vector<std::pair<std::string,int>>> textPool;
+    std::vector<std::pair<std::string,int>> textField;
 
-        if(objectCode[i]=="-"){
+    for(int i=0;i<objectCode.size();i++){ //populates the textPool vector to construct the text records from it later
+
+        if(objectCode[i]=="-")
             continue;
-        }
 
         if(objectCode[i]=="--"){
 
-            if(temp.size()<3){
+            if(textField.size()==0) //if the text record will start with a record breaker then we don't even have to start it
                 continue;
-            }
 
-            length = location[i] - startLocation;
-
-            startLocation = location[i+3];
-            //cout<<"Location is" <<intToHexString(location[i])<<endl; //pour debugging
-            stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
-            temp.insert(9,stream.str()+" ");
-
-            stream.str(std::string());
-
-            hteRecord.push_back(temp);
-
-            temp="T ";
+            textField.push_back({"0",location[i]}); //appending the text record end address for easier calculations in the future
+            textPool.push_back(textField);
+            textField.clear();
             capacity=60;
             continue;
         }
 
-        if(temp == "T "){
-            stream<<std::setfill('0') << std::setw(6) << std::hex << startLocation ;
-            temp+=stream.str() + " ";
+        if(objectCode[i].size()<=capacity){
 
-            stream.str(std::string());
-        }
-
-
-        if(objectCode[i].size() <= capacity){
-            temp+=objectCode[i] + " ";
             capacity-=objectCode[i].size();
-        }
-        else{
-            length = location[i] - startLocation;
+            textField.push_back({objectCode[i],location[i]});
 
-            startLocation = location[i];
-            //cout<<"Location is" <<intToHexString(location[i])<<endl; //pour debugging
-            stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
-            temp.insert(9,stream.str()+" ");
+        }else{
 
-            stream.str(std::string());
-
-            hteRecord.push_back(temp);
-
-            temp="T ";
+            textField.push_back({"0",location[i]});
+            textPool.push_back(textField);
+            textField.clear();
             capacity=60;
-            i--;
+            i--; //stalling the next loop so we don't forget to push the current object code in the beginning of the next record
         }
+
     }
-            i--;
-            length = location[i] - startLocation +1 ;
 
-            startLocation = location[i];
+    if(textField.size()>0){ //dumping the last text record if it exists
 
-            stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
-            temp.insert(9,stream.str()+" ");
-
-            stream.str(std::string());
-
-            hteRecord.push_back(temp);
-
-
-}
-/*void createText(std::vector<std::vector<std::string>> code, std::vector<int> location, std::vector<std::string> &hteRecord, std::vector<std::string>objectCode,int lines){
+        textField.push_back({"0",location[location.size()-1]});
+        textPool.push_back(textField);
+        textField.clear();
+    }
 
     std::stringstream stream;
-    std::string temp = "T ";
-    int startAddress=location[0];
-    int endAddress=location[1];
-    int capacity = 60;
-    int length=0;
 
-    for(int i=0 ; i<objectCode.size() ; i++){
-        if(objectCode[i] == "--" || objectCode[i].size() > capacity){
-            if(temp.size()<3){
-                continue;
-            }
-            length = endAddress - startAddress;
+    for(int i=0;i<textPool.size();i++){ //creates text records
 
-            startAddress = endAddress;
-            //endAddress = lo TODO
+        std::string temp="T ";
 
-            stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
-            temp.insert(9,stream.str()+" ");
+        //construct the starting address
+        stream<<std::setfill('0') << std::setw(6) << std::hex <<textPool[i][0].second;
+        temp+=stream.str() + " ";
+        stream.str(std::string());
 
-            stream.str(std::string());
+        //constructing the text record length
+        int length = (textPool[i][textPool[i].size()-1].second) - (textPool[i][0].second);
+        stream<<std::setfill('0') << std::setw(2) << std::hex << length ;
+        temp+=stream.str() + " ";
+        stream.str(std::string());
 
-            hteRecord.push_back(temp);
+        //adding the object codes for the current text record, size()-1 because the last element which is the end address shouldn't be considered an object code
+        for(int j=0;j<textPool[i].size()-1;j++)
+            temp+=textPool[i][j].first + " ";
 
-            temp="T ";
-            capacity=60;
-        }
-        else if(objectCode[i] == "-"){
-            continue;
-        }else if(temp == "T "){
-            stream<<std::setfill('0') << std::setw(6) << std::hex << startAddress ;
-            temp+=stream.str() + " ";
-            stream.str(std::string());
-        }else {
-            temp+=objectCode[i] + " ";
-            capacity-=objectCode[i].size();
-            endAddress=location[i+1];
-        }
+        hteRecord.push_back(temp);
     }
-}*/
+}
 
 void createEnd(std::vector<int> location, std::vector<std::string> &hteRecord){
 
