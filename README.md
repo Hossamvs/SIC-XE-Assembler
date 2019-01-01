@@ -1,5 +1,6 @@
 # SIC-XE-Assembler
-A two pass SIC/XE Assembler
+A two pass SIC/XE Assembler.\
+The SIC version of this project can be found at [SIC Assembler](https://github.com/MohamedYasser97/SIC-Assembler).
 
 # Usage
 - Run SICXE.cpp
